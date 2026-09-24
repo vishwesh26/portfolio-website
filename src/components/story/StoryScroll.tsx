@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
-import { useRef } from "react";
+import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { useEffect, useRef } from "react";
 import { Scribble } from "@/components/ui/Doodles";
 import { RocketSketch, Starfield, WireframeSketch } from "./Scenery";
 
@@ -28,12 +28,12 @@ const COPY = {
  * As you scroll into the track, the viewport smoothly, imperceptibly darkens into the
  * star-lit night sky (#0a0a0a), then transitions through dusk (#5a5a5a), and back to white (#ffffff).
  * Pure uniform background color interpolation on scroll — zero static gradient stripes.
+ * Fully responsive across both mobile UI and desktop viewports.
  */
 export function StoryScroll() {
   return (
     <section aria-label="How I work">
       <ScrubbedStory />
-      <StackedStory />
     </section>
   );
 }
@@ -138,8 +138,22 @@ function ScrubbedStory() {
   const rocketDraw = useTransform(scrollYProgress, MAP.rocketDraw);
   const rocketLift = useTransform(scrollYProgress, reduce ? ZERO : MAP.rocketLift);
 
+  useMotionValueEvent(background, "change", (latest) => {
+    if (typeof document !== "undefined") {
+      document.body.style.backgroundColor = latest;
+    }
+  });
+
+  useEffect(() => {
+    return () => {
+      if (typeof document !== "undefined") {
+        document.body.style.backgroundColor = "";
+      }
+    };
+  }, []);
+
   return (
-    <div ref={ref} className="relative hidden h-[350vh] md:block">
+    <div ref={ref} className="relative block h-[350vh]">
       {/* Nav theme marker: dark while stages 1–2 sit under the navbar */}
       <div
         aria-hidden="true"
@@ -148,113 +162,53 @@ function ScrubbedStory() {
         style={{ top: "10%", height: "54%" }}
       />
 
-      <motion.div style={{ backgroundColor: background }} className="sticky top-0 h-screen overflow-hidden">
+      <motion.div style={{ backgroundColor: background }} className="sticky top-0 h-screen h-[100dvh] overflow-hidden">
         <motion.div style={{ opacity: starsOpacity }} className="absolute inset-0">
           <Starfield />
         </motion.div>
 
         {/* Stage 2 backdrop: dot-grid paper + a wireframe that sketches itself */}
         <motion.div style={{ opacity: gridOpacity }} className="paper-dots-dark absolute inset-0" aria-hidden="true">
-          <WireframeSketch draw={wireframe} className="absolute left-1/2 top-1/2 w-[min(78vw,980px)] -translate-x-1/2 -translate-y-1/2 text-white/[0.11]" />
+          <WireframeSketch draw={wireframe} className="absolute left-1/2 top-1/2 w-[min(92vw,980px)] -translate-x-1/2 -translate-y-1/2 text-white/[0.11]" />
         </motion.div>
 
         <div className="absolute inset-x-0 bottom-0">
-          <RocketSketch draw={rocketDraw} lift={rocketLift} className="block h-[36vh] w-full" />
+          <RocketSketch draw={rocketDraw} lift={rocketLift} className="block h-[26vh] md:h-[36vh] w-full" />
         </div>
 
-        <div className="relative z-10 grid h-full place-items-center px-6 text-center">
-          <motion.div style={{ opacity: s1Opacity, scale: s1Scale, y: s1Y }} className="col-start-1 row-start-1 max-w-4xl">
-            <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/45">{COPY.s1Eyebrow}</p>
-            <h2 className="mt-6 text-[clamp(3rem,6.6vw,5.75rem)] font-extrabold leading-[1.02] tracking-[-0.04em] text-white">
+        <div className="relative z-10 grid h-full place-items-center px-4 text-center sm:px-6">
+          <motion.div style={{ opacity: s1Opacity, scale: s1Scale, y: s1Y }} className="col-start-1 row-start-1 max-w-4xl px-2">
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/45 sm:text-[11px] sm:tracking-[0.3em]">{COPY.s1Eyebrow}</p>
+            <h2 className="mt-4 text-[clamp(1.9rem,5.5vw,5.75rem)] font-extrabold leading-[1.04] tracking-[-0.035em] text-white sm:mt-6">
               {COPY.s1Lead} <ScrollCircledWord draw={s1Circle}>{COPY.s1Word}</ScrollCircledWord>
               <br />
               {COPY.s1Tail}
             </h2>
-            <p className="mt-6 -rotate-2 font-hand text-[clamp(1.6rem,2.6vw,2.2rem)] leading-none text-accent">{COPY.s1Script}</p>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-night-muted">{COPY.s1Sub}</p>
+            <p className="mt-4 -rotate-2 font-hand text-[clamp(1.35rem,2.6vw,2.2rem)] leading-none text-accent sm:mt-6">{COPY.s1Script}</p>
+            <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-night-muted sm:mt-6 sm:text-lg">{COPY.s1Sub}</p>
           </motion.div>
 
-          <motion.div style={{ opacity: s2Opacity, y: s2Y, scale: s2Scale }} className="col-start-1 row-start-1 max-w-4xl">
-            <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/60">{COPY.s2Eyebrow}</p>
-            <h2 className="mt-6 text-[clamp(3rem,6.4vw,5.5rem)] font-extrabold leading-[1.02] tracking-[-0.04em] text-white">
+          <motion.div style={{ opacity: s2Opacity, y: s2Y, scale: s2Scale }} className="col-start-1 row-start-1 max-w-4xl px-2">
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/60 sm:text-[11px] sm:tracking-[0.3em]">{COPY.s2Eyebrow}</p>
+            <h2 className="mt-4 text-[clamp(1.9rem,5.5vw,5.5rem)] font-extrabold leading-[1.04] tracking-[-0.035em] text-white sm:mt-6">
               {COPY.s2Title}
             </h2>
-            <p className="mt-5 rotate-1 font-script text-[clamp(2.25rem,4vw,3.25rem)] font-bold leading-none text-white">
+            <p className="mt-3 rotate-1 font-script text-[clamp(1.8rem,4vw,3.25rem)] font-bold leading-none text-white sm:mt-5">
               {COPY.s2Script}
             </p>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/80">{COPY.s2Sub}</p>
+            <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-white/80 sm:mt-6 sm:text-lg">{COPY.s2Sub}</p>
           </motion.div>
 
-          <motion.div style={{ opacity: s3Opacity, y: s3Y }} className="col-start-1 row-start-1 mb-[30vh] max-w-3xl">
-            <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted">{COPY.s3Eyebrow}</p>
-            <h2 className="mt-6 text-[clamp(2.4rem,5vw,4.25rem)] font-extrabold leading-[1.05] tracking-[-0.035em] text-ink">
+          <motion.div style={{ opacity: s3Opacity, y: s3Y }} className="col-start-1 row-start-1 mb-[16vh] max-w-3xl px-2 sm:mb-[22vh] md:mb-[30vh]">
+            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted sm:text-[11px] sm:tracking-[0.3em]">{COPY.s3Eyebrow}</p>
+            <h2 className="mt-4 text-[clamp(1.75rem,4.8vw,4.25rem)] font-extrabold leading-[1.05] tracking-[-0.035em] text-ink sm:mt-6">
               Build it. <span className="marker">Ship it.</span> Listen. Repeat.
             </h2>
-            <p className="mt-4 -rotate-2 font-hand text-3xl text-accent">{COPY.s3Script}</p>
-            <p className="mx-auto mt-5 max-w-xl text-lg leading-relaxed text-muted">{COPY.s3Sub}</p>
+            <p className="mt-3 -rotate-2 font-hand text-xl text-accent sm:mt-4 md:text-3xl">{COPY.s3Script}</p>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-muted sm:mt-5 sm:text-lg">{COPY.s3Sub}</p>
           </motion.div>
         </div>
       </motion.div>
-    </div>
-  );
-}
-
-function StackedStory() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start end", "start 35%"] });
-  const bg = useTransform(scrollYProgress, [0, 1], ["rgb(255, 255, 255)", "rgb(10, 10, 10)"]);
-
-  const fade = {
-    initial: { opacity: 0, y: 16 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, amount: 0.4 },
-    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const },
-  };
-
-  return (
-    <div className="md:hidden">
-      <motion.div
-        ref={containerRef}
-        data-nav-theme="dark"
-        style={{ backgroundColor: bg }}
-        className="relative overflow-hidden px-6 py-32 text-center"
-      >
-        <Starfield />
-        <motion.div {...fade} className="relative">
-          <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/45">{COPY.s1Eyebrow}</p>
-          <h2 className="mt-5 text-[2.6rem] font-extrabold leading-[1.05] tracking-[-0.035em] text-white">
-            {COPY.s1Lead}{" "}
-            <Scribble kind="circle" delay={0.5}>
-              {COPY.s1Word}
-            </Scribble>{" "}
-            {COPY.s1Tail}
-          </h2>
-          <p className="mt-5 -rotate-2 font-hand text-2xl text-accent">{COPY.s1Script}</p>
-          <p className="mx-auto mt-5 max-w-md leading-relaxed text-night-muted">{COPY.s1Sub}</p>
-        </motion.div>
-      </motion.div>
-
-      <div data-nav-theme="dark" className="paper-dots-dark relative overflow-hidden bg-dusk px-6 py-28 text-center">
-        <WireframeSketch className="absolute left-1/2 top-1/2 w-[140%] -translate-x-1/2 -translate-y-1/2 text-white/[0.12]" />
-        <motion.div {...fade} className="relative">
-          <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/60">{COPY.s2Eyebrow}</p>
-          <h2 className="mt-5 text-[2.5rem] font-extrabold leading-[1.05] tracking-[-0.035em] text-white">{COPY.s2Title}</h2>
-          <p className="mt-4 font-script text-4xl font-bold leading-none text-white">{COPY.s2Script}</p>
-          <p className="mx-auto mt-5 max-w-md leading-relaxed text-white/85">{COPY.s2Sub}</p>
-        </motion.div>
-      </div>
-
-      <div className="relative bg-white pt-24 text-center">
-        <motion.div {...fade} className="px-6">
-          <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-muted">{COPY.s3Eyebrow}</p>
-          <h2 className="mt-5 text-[2.2rem] font-extrabold leading-[1.08] tracking-[-0.03em]">
-            Build it. <span className="marker">Ship it.</span> Listen. Repeat.
-          </h2>
-          <p className="mt-3 -rotate-2 font-hand text-2xl text-accent">{COPY.s3Script}</p>
-          <p className="mx-auto mt-4 max-w-md leading-relaxed text-muted">{COPY.s3Sub}</p>
-        </motion.div>
-        <RocketSketch className="mt-8 block h-44 w-full" />
-      </div>
     </div>
   );
 }
