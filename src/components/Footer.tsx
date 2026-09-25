@@ -2,6 +2,7 @@ import { Squiggle } from "@/components/ui/Doodles";
 import { MapPinIcon, SocialIcon } from "@/components/ui/icons";
 import { profile, socials } from "@/lib/content";
 import { cx, pillInteractive } from "@/lib/styles";
+import { VisitorCounter } from "./footer/VisitorCounter";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -38,6 +39,10 @@ export function Footer() {
             </li>
           ))}
         </ul>
+
+        <div className="pt-1">
+          <VisitorCounter />
+        </div>
 
         <p className="flex items-center gap-1.5 text-sm text-muted">
           <MapPinIcon className="size-4" />
