@@ -57,18 +57,26 @@ export const navLinks = [
 export const greetings = ["Hello,", "Namaste,", "Hey,", "Ciao,"] as const;
 
 export const skills = [
+  "JavaScript",
+  "TypeScript",
+  "C++",
   "React",
   "Next.js",
-  "TypeScript",
-  "Three.js",
-  "Framer",
-  "GSAP",
   "Node.js",
-  "Figma",
-  "Python",
-  "Tailwind",
+  "Express",
+  "Tailwind CSS",
+  "MongoDB",
+  "MySQL",
   "PostgreSQL",
-];
+  "Prisma",
+  "Docker",
+  "Git",
+  "GitHub",
+  "Postman",
+  "Vercel",
+] as const;
+
+export type Skill = (typeof skills)[number];
 
 /* ------------------------------------------------------------------ */
 /*  About                                                              */

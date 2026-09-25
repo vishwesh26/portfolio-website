@@ -9,6 +9,7 @@ import { Eyebrow, RichText } from "@/components/ui/Typography";
 const STICKER_TILT = ["-rotate-2", "rotate-1", "-rotate-1", "rotate-2", "rotate-0"];
 import { aboutStory, aboutTldr, skills, timeline } from "@/lib/content";
 import { cx } from "@/lib/styles";
+import { TechLogo } from "@/components/ui/TechLogos";
 import { PolaroidStack } from "./PolaroidStack";
 import { RetroPrinter } from "./RetroPrinter";
 
@@ -129,11 +130,12 @@ export function About() {
               <li
                 key={skill}
                 className={cx(
-                  "rounded-full border-[1.5px] border-dashed border-ink/25 bg-white px-3.5 py-1.5 text-sm font-medium text-ink/85 shadow-[2px_2px_0_rgb(17_17_17/0.08)] transition-[rotate,border-color] duration-200 hover:rotate-0 hover:border-accent",
+                  "inline-flex items-center gap-2 rounded-full border-[1.5px] border-dashed border-ink/25 bg-white px-3.5 py-1.5 text-sm font-medium text-ink/85 shadow-[2px_2px_0_rgb(17_17_17/0.08)] transition-[rotate,border-color,transform] duration-200 hover:rotate-0 hover:scale-105 hover:border-accent hover:shadow-float select-none",
                   STICKER_TILT[i % STICKER_TILT.length],
                 )}
               >
-                {skill}
+                <TechLogo name={skill} className="size-4 shrink-0" />
+                <span>{skill}</span>
               </li>
             ))}
           </ul>
